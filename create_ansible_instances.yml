@@ -28,4 +28,25 @@
         line: "{{ item }}"
         create: yes
         mode: 0644
-      loop: "{{ terraform_output.outputs.IP_Adressen.value }}"
+      loop: "{{ terraform_output.outputs.IP_Adressen.value }}"  
+
+- name: setze das Passwort für ec2-user und erlaube login
+  hosts:
+    - ec2instances
+  become: yes
+  remote_user: ec2-user
+  vars:
+    - ansible_ssh_private_key_file: "../../gdcjmcm/key/gdcjmcm.pem"
+
+  tasks:
+    - name: wait for connection
+      wait_for_connection:
+        delay: 30                 # probiere nach 30 Sekunden
+        timeout: 60              # Timeout nach 1 Minute
+    - name: setze Passwort
+      shell: 'echo abc123 | passwd --stdin ec2-user'
+    - name: ändre sshd_config
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PasswordAuthentication no'
+        line: 'PasswordAuthentication yes'  
