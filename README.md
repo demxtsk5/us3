@@ -11,7 +11,7 @@ Was macht das Playbook:
 - Das Passwort ist mit ansible vault verschlüsselt
 - Es wird ssh mit Passwortautentifizierung erlaubt  
 - es wird ein Inventory geschrieben (lokal Dateiname: inventory)  
-- Abbau mit terraform destroy -auto-approve
+- Abbau mit _terraform destroy -auto-approve_
 
 <details>
 <summary>
