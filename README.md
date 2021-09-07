@@ -1,8 +1,8 @@
-#### Ansible Playbook
+## Ansible Playbook
 
-## Aufbau von zwei Instanzen via Ansible Playbook in der AmazonCloud
+### Aufbau von zwei Instanzen via Ansible Playbook in der AmazonCloud
 
-Hashtag: iaac - infrastructure as a code  
+#### Hashtag: iaac - infrastructure as a code  
 
 Variablen müssen nicht angepasst werden.  
 Das Playbook ist nicht universell einsatzbar.  
