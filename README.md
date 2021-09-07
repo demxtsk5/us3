@@ -9,7 +9,7 @@ Das Playbook :books: ist nicht universell einsatzbar.
 
 #### Was macht das Playbook :books:  
 - Es wird ein Passwort für den ec2-user gesetzt  
-- Das Passwort ist mit ansible vault verschlüsselt
+- Das Passwort ist mit ansible vault verschlüsselt :punch:
 - Es wird ssh mit Passwortautentifizierung erlaubt  
 - es wird ein Inventory geschrieben (lokal Dateiname: inventory)  
 - Abbau mit _terraform destroy -auto-approve_
