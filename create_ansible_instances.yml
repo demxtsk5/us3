@@ -1,0 +1,31 @@
+---
+- name: baue ec2 instanzen für einen ansible workshop
+  hosts:
+    - localhost
+  gather_facts: no
+
+  tasks:
+    - name: loesche altes Inventory
+      file:
+        path: ./inventory
+        state: absent
+    - name: führe terraform aus
+      terraform:
+        project_path: ./
+        state: present
+        force_init: true
+      register: terraform_output
+    - debug:
+        var: terraform_output
+    - name: Erzeuge dynamisches Inventory
+      add_host:
+        name: "{{ item }}"
+        groups: ec2instances
+      loop: "{{ terraform_output.outputs.IP_Adressen.value }}"
+    - name: Erzeuge statisches Inventory
+      lineinfile:
+        path: ./inventory
+        line: "{{ item }}"
+        create: yes
+        mode: 0644
+      loop: "{{ terraform_output.outputs.IP_Adressen.value }}"

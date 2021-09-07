@@ -10,68 +10,66 @@ terraform {
 
 # Provider und Region festlegen
 provider "aws" {
-  profile = "mg0050"
+  profile = "default"
   region  = var.vpc_region
 }
 # Aufbau eines virtuelle cloud (virt. RZ)
-resource "aws_vpc" "micha" {
+resource "aws_vpc" "ansible_vpc" {
   cidr_block = var.cidr_block
   tags = {
-    Name = "michas tolle VPC"
+    Name = "Ansible VPC"
   }
 }
 # Anlegen von Netzwerken
-resource "aws_subnet" "pub1" {
-  vpc_id     = aws_vpc.micha.id
+resource "aws_subnet" "ansible_pub1" {
+  vpc_id     = aws_vpc.ansible_vpc.id
   cidr_block = "10.0.0.0/25"
   availability_zone = "eu-central-1a"
   tags = {
-    Name = "public network"
+    Name = "ansible public network"
   }
 }
-resource "aws_subnet" "pri1" {
-  vpc_id     = aws_vpc.micha.id
-  cidr_block = "10.0.1.0/24"
-  availability_zone = "eu-central-1a"
-  tags = {
-    Name = "private network"
-  }
-}  
 # Erstellen vom Internet Gateway
-resource "aws_internet_gateway" "igw" {
-  vpc_id = aws_vpc.micha.id
+resource "aws_internet_gateway" "ansible_igw" {
+  vpc_id = aws_vpc.ansible_vpc.id
   tags = {
-    Name = "michas igw"
+    Name = "ansible igw"
   }
 }
 # Routingtabelle anlegen und mit IGW verbinden
-resource "aws_route_table" "rtb" {
-  vpc_id = aws_vpc.micha.id
+resource "aws_route_table" "ansible_rtb" {
+  vpc_id = aws_vpc.ansible_vpc.id
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.igw.id
+    gateway_id = aws_internet_gateway.ansible_igw.id
   }
   tags = {
     Name = "michas tolle routing tabelle"
   }
 }
 # public Netzwerk mit Routingtablle verbinden
- resource "aws_route_table_association" "subnet-connect1" {
-  subnet_id = aws_subnet.pub1.id
-  route_table_id = aws_route_table.rtb.id
+ resource "aws_route_table_association" "ansible_subnet-connect1" {
+  subnet_id = aws_subnet.ansible_pub1.id
+  route_table_id = aws_route_table.ansible_rtb.id
 }
 # Security Group anlegen
 # jedes Netzwerkinterface (nic) einer MUSS eine Security group zugewiesen werden -
 # funktioniert ähnlich einer FW. Der eingehende Traffic wird gefiltert. Um den ausgehenden Traffic,
 # muss sich im OS der VM gekümmert.
-resource "aws_security_group" "seg" {
+resource "aws_security_group" "ansible_seg" {
     description = "Allow incoming SSH access"
-    vpc_id = aws_vpc.micha.id
+    vpc_id = aws_vpc.ansible_vpc.id
     ingress {
       from_port = 22
       to_port = 22
       protocol = "tcp"
       cidr_blocks =  ["0.0.0.0/0"]
+    }
+    ingress {
+      from_port = 22
+      to_port = 22
+      protocol = "tcp"
+      cidr_blocks =  ["10.0.0.0/25"]
     }
     egress {
       from_port = 0
@@ -80,18 +78,25 @@ resource "aws_security_group" "seg" {
       cidr_blocks = ["0.0.0.0/0"]
     }
     tags = {
-      Name = "micha ssh access"
+      Name = "ansible ssh access"
     }
 }
 # Aufbau einer Instanz
-resource "aws_instance" "webserver1" {
+resource "aws_instance" "ansible_instanz" {
   ami = "ami-0453cb7b5f2b7fca2"
+  count = 2
   instance_type = "t2.micro"
-  subnet_id = aws_subnet.pub1.id
-  security_groups = [aws_security_group.seg.id]
-  key_name = "michas_toller_key"
+  subnet_id = aws_subnet.ansible_pub1.id
+  security_groups = [aws_security_group.ansible_seg.id]
+  key_name = "gdcjmcm"
   associate_public_ip_address = true
   tags = {
-    Name = "michas toller webserver"
+    Name = "ansible test server"
   }
+}
+output "IP_Adressen" {
+  value = aws_instance.ansible_instanz.*.public_ip
+}
+output "IP_internal" {
+  value = aws_instance.ansible_instanz.*.private_ip
 }

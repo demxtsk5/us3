@@ -3,6 +3,6 @@ variable "vpc_region" {
     description = "in dieser Region wird die VPC erstellt"
 }
 variable "cidr_block" {
-  default = "10.0.0.0/23"
+  default = "10.0.0.0/24"
   description = "Hauptnetz in der VPC"
 }
