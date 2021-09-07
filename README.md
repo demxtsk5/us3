@@ -1,12 +1,13 @@
-## Ansible Playbook
+## Ansible Playbook :books:
 
 ### Aufbau von zwei Instanzen via Ansible Playbook in der AmazonCloud
 
 #### Hashtag: iaac - infrastructure as a code  
 
 Variablen müssen nicht angepasst werden.  
-Das Playbook ist nicht universell einsatzbar.  
-Was macht das Playbook:  
+Das Playbook :books: ist nicht universell einsatzbar.   
+
+#### Was macht das Playbook :books:  
 - Es wird ein Passwort für den ec2-user gesetzt  
 - Das Passwort ist mit ansible vault verschlüsselt
 - Es wird ssh mit Passwortautentifizierung erlaubt  
